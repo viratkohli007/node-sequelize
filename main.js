@@ -1,32 +1,27 @@
-const Sequelize = require('sequelize');
+// const Sequelize = require('sequelize');
 const express = require('express')
 const port = 8080
+const router = express.Router();
 
 var conn = require("./dbconn.js")
-
+const controller = require("./controller/controller.js")
 var app = express()
 conn.connection()
 
-const User = conn.sequelize.define('user', {
-    firstName: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    lastName: {
-      type: Sequelize.STRING
-    }
-  }, {
-    // timestamps : false
-    });
+var bodyParser = require('body-parser')
 
-User.sync({ force: false }).then(() => {
-    // Now the `users` table in the database corresponds to the model definition
-    return User.create({
-        firstName: 'John3',
-        lastName: 'Hancock3'
-    });
-});
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-app.listen(port, ()=>{
+app.use("/", router)
+
+router.post("/register", controller.register)
+router.post("/login", controller.login)
+router.get("/getuserdata/:id", controller.getUserData)
+router.get("/removeuser/:id", controller.removeUser)
+router.post("/updateuser/:id" ,controller.updateUser)
+
+
+app.listen(port, () => {
     console.log('server is listining on port '+port)
 })
