@@ -3,8 +3,10 @@ const express = require('express')
 const port = 8080
 const router = express.Router();
 
-var conn = require("./dbconn.js")
+const conn = require("./dbconn.js")
 const controller = require("./controller/controller.js")
+const mdw = require("./middleware/middleware.js")
+
 var app = express()
 conn.connection()
 
@@ -15,11 +17,11 @@ app.use(bodyParser.json())
 
 app.use("/", router)
 
-router.post("/register", controller.register)
-router.post("/login", controller.login)
-router.get("/getuserdata/:id", controller.getUserData)
-router.get("/removeuser/:id", controller.removeUser)
-router.post("/updateuser/:id" ,controller.updateUser)
+router.post("/register", mdw.checkRoute, controller.register)
+router.post("/login", mdw.checkRoute, mdw.generateToken, controller.login)
+router.get("/api/getuserdata/:id", mdw.checkRoute, controller.getUserData)
+router.get("/api/removeuser/:id", mdw.checkRoute, controller.removeUser)
+router.post("/api/updateuser/:id" , mdw.checkRoute, controller.updateUser)
 
 
 app.listen(port, () => {

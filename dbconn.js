@@ -6,7 +6,7 @@ const password = ""
 const host = "localhost"
 
 const sequelize = new Sequelize(dbname, user, password, {
-    host: 'localhost',
+    host: host,
     dialect: 'postgres'
 });
 
