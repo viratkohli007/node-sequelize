@@ -49,7 +49,7 @@ exports.login = async function(req, res){
             user = await User.User.findAll({
                 where :{
                     [Op.and] : [{email : email, password : password}]
-                }
+                }   
             })
             
             if (user.length != 0){
@@ -143,4 +143,15 @@ exports.updateUser = async function(req, res){
     } catch(err) {
         console.log("error in updating", err)
     }
+}
+
+exports.getMyData = async function(req, res){
+    
+        let user = await User.User.findAll({
+            email : req.body.email
+        })
+        if (user.length != 0){
+            res.send(user[0].dataValues)
+        } 
+        
 }

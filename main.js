@@ -19,9 +19,10 @@ app.use("/", router)
 
 router.post("/register",  controller.register)
 router.post("/login", controller.login)
-router.get("/api/getuserdata/:id", mdw.checkRoute, mdw.verifyToken, controller.getUserData)
-router.get("/api/removeuser/:id", mdw.checkRoute, mdw.verifyToken, controller.removeUser)
-router.post("/api/updateuser/:id" , mdw.checkRoute, mdw.verifyToken, controller.updateUser)
+router.get("/api/getuserdata/:id", mdw.verifyToken, controller.getUserData)
+router.get("/api/removeuser/:id", mdw.verifyToken, controller.removeUser)
+router.post("/api/updateuser/:id" , mdw.verifyToken, controller.updateUser)
+router.get("/api/getmydata" , mdw.verifyToken, controller.getMyData)
 
 
 app.listen(port, () => {
