@@ -17,11 +17,11 @@ app.use(bodyParser.json())
 
 app.use("/", router)
 
-router.post("/register", mdw.checkRoute, controller.register)
-router.post("/login", mdw.checkRoute, mdw.generateToken, controller.login)
-router.get("/api/getuserdata/:id", mdw.checkRoute, controller.getUserData)
-router.get("/api/removeuser/:id", mdw.checkRoute, controller.removeUser)
-router.post("/api/updateuser/:id" , mdw.checkRoute, controller.updateUser)
+router.post("/register",  controller.register)
+router.post("/login", controller.login)
+router.get("/api/getuserdata/:id", mdw.checkRoute, mdw.verifyToken, controller.getUserData)
+router.get("/api/removeuser/:id", mdw.checkRoute, mdw.verifyToken, controller.removeUser)
+router.post("/api/updateuser/:id" , mdw.checkRoute, mdw.verifyToken, controller.updateUser)
 
 
 app.listen(port, () => {

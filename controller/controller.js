@@ -29,7 +29,6 @@ exports.register = async function (req, res) {
                 password
             }
             User.User.sync({ force: false }).then(() => {
-                // Now the `users` table in the database corresponds to the model definition
                 return User.User.create(payload);
             });
             console.log("created new user")
@@ -43,7 +42,7 @@ exports.register = async function (req, res) {
 }
 
 exports.login = async function(req, res){    
-    if (!req.headers.token){
+    // if (!req.headers.token){
         try{
             let {email, password} = req.body
             
@@ -55,35 +54,36 @@ exports.login = async function(req, res){
             
             if (user.length != 0){
                 console.log("This is user",user)
-                console.log("You are logged in...")
-                console.log("token is -->", req.token)
+                let payload = { email : email}
+                let token = await jwt.sign(payload, secret_key);
+                req.token = token
+                console.log("headers",req.headers)
                 res.send({
-                    // msg : "Logged In successfully",
                     token : req.token
                 })
-            } else{
+            } else {
                 console.log("Email or password not matching")
                 res.send({
                     msg : "Email or password not matching"
                 })
             }
             
-        }catch(err){
+        } catch(err) {
             console.log("login err", err)
         }
-    } else {
-        var decoded = jwt.verify(req.headers.token, secret_key);
-        user = await User.User.findAll({
-            where :{
-                [Op.and] : [{email : decoded.email, password : decoded.password}]
-            }
-        })
-        if (user.length !== 0){
-            res.send({
-                msg : "You are successfully logged in."
-            })
-        }
-    }
+    // } else {
+    //     var decoded = jwt.verify(req.headers.token, secret_key);
+    //     user = await User.User.findAll({
+    //         where :{
+    //             [Op.and] : [{email : decoded.email, password : decoded.password}]
+    //         }
+    //     })
+    //     if (user.length !== 0){
+    //         res.send({
+    //             msg : "You are successfully logged in."
+    //         })
+    //     }
+    // }
     
 }
 

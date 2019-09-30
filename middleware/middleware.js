@@ -1,15 +1,28 @@
 const jwt = require('jsonwebtoken')
 const secret_key = "HAR_HAR_MAHADEV"
-
-exports.generateToken = async function(req, res, next) {
-    if (!req.headers.token){        
-        let payload = req.body
-        console.log(payload)        
-        let token = await jwt.sign(payload, secret_key);
-        req.token = token
-        console.log("headers",req.headers)
+// const Sequelize = require('sequelize');
+const User = require("../model/model.js")
+exports.verifyToken = async function(req, res, next) {
+    if (!req.headers.token) {
+        res.send({
+            msg : "token is not there"
+        })
+    } else {
+        var decodedPayload = jwt.verify(req.headers.token, secret_key)
+        const user = await User.User.findAll({
+            where : {
+                email : decodedPayload.email
+            }
+        })
+        console.log("user--->", user)
+        if (user.length != 0){
+            next()
+        } else {
+            res.send({
+                msg : "this user is not in database"
+            })
+        }
     }
-    next()
 }
 
 exports.checkRoute = function(req, res, next){
