@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken')
-const secret_key = "HAR_HAR_MAHADEV"
 // const Sequelize = require('sequelize');
 const User = require("../model/model.js")
 exports.verifyToken = async function(req, res, next) {
 
         try{
-            var decodedPayload = jwt.verify(req.headers.token, secret_key)
+            var decodedPayload = jwt.verify(req.headers.token, process.env.SECRET_KEY)
         } catch(err) {
             console.log('error in decoding token')
             res.send({

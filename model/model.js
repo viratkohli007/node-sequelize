@@ -15,7 +15,11 @@ const User = conn.sequelize.define('user', {
       type : Sequelize.STRING
     }
 }, {
-  // timestamps : false
+  scopes: {
+    hideSecretColumns: {
+      attributes: { exclude: ['id', 'password'] },
+    }
+  }
 });
 
 exports.User = User

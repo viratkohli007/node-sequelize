@@ -1,14 +1,17 @@
 // var conn = require("../dbconn.js")
+import crypto from 'crypto';
 const Sequelize = require('sequelize');
 const User  = require('../model/model.js')
 const Op = Sequelize.Op;
-const secret_key = "HAR_HAR_MAHADEV"
+// const process.env.SECRET_KEY = "HAR_HAR_MAHADEV"
 const jwt = require('jsonwebtoken')
 
 exports.register = async function (req, res) {
     try{
         let { firstname, lastname, email, password } = req.body
-        console.log(firstname, lastname, email, password)
+        password = crypto.createHmac('sha256', process.env.SECRET_KEY)
+                        .update(password)
+                        .digest('hex');
         const user = await User.User.findAll({
             where : {
                 email : email
@@ -41,12 +44,14 @@ exports.register = async function (req, res) {
     }
 }
 
-exports.login = async function(req, res){    
+exports.login = async function(req, res){
     // if (!req.headers.token){
         try{
             let {email, password} = req.body
-            
-            user = await User.User.findAll({
+            password = crypto.createHmac('sha256', process.env.SECRET_KEY)
+                            .update(password)
+                            .digest('hex');
+            let user = await User.User.findAll({
                 where :{
                     [Op.and] : [{email : email, password : password}]
                 }   
@@ -55,7 +60,7 @@ exports.login = async function(req, res){
             if (user.length != 0){
                 console.log("This is user",user)
                 let payload = { email : email}
-                let token = await jwt.sign(payload, secret_key);
+                let token = await jwt.sign(payload, process.env.SECRET_KEY);
                 req.token = token
                 console.log("headers",req.headers)
                 res.send({
@@ -72,7 +77,7 @@ exports.login = async function(req, res){
             console.log("login err", err)
         }
     // } else {
-    //     var decoded = jwt.verify(req.headers.token, secret_key);
+    //     var decoded = jwt.verify(req.headers.token, process.env.SECRET_KEY);
     //     user = await User.User.findAll({
     //         where :{
     //             [Op.and] : [{email : decoded.email, password : decoded.password}]
@@ -91,13 +96,12 @@ exports.getUserData = async function(req, res){
     try{
         let id = req.params.id
         console.log("id--->", id)
-        user = await User.User.findAll({
+        let user = await User.User.scope('hideSecretColumns').findOne({
             where :{
                 id : id
             }
         })
-    console.log("user-->",user[0].dataValues)
-    res.send(user[0].dataValues)
+    res.send({code:200, success:true, data: user})
     }catch(err){
         console.log("error in getting all data", err)
     }
@@ -124,6 +128,9 @@ exports.updateUser = async function(req, res){
     try{
         let id = req.params.id
         let {firstname, lastname, email, password} = req.body
+        password = crypto.createHmac('sha256', process.env.SECRET_KEY)
+                            .update(password)
+                            .digest('hex');
         let user = await User.User.update({
             firstname: firstname,
             lastname : lastname,

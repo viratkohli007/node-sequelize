@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize');
 
-const dbname = "test"
-const user = "aniket"
+const dbname = process.env.DB_NAME
+const user = process.env.DB_USER
 const password = ""
-const host = "localhost"
+const host = process.env.DB_HOST
 
 const sequelize = new Sequelize(dbname, user, password, {
     host: host,
-    dialect: 'postgres'
+    dialect: 'postgresql'
 });
 
 function connectionCheck(){
@@ -20,5 +20,3 @@ function connectionCheck(){
 
 exports.sequelize = sequelize
 exports.connection = connectionCheck
-
-
